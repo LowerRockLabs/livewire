@@ -55,8 +55,25 @@ jobs:
           composer require "laravel/framework:${{ matrix.laravel }}" --no-interaction --no-update --dev
           composer update --prefer-stable --no-interaction
 
-      - name: Run Unit Tests
-        run: php ./vendor/bin/phpunit --testsuite Unit --cache-directory=".phpunit.cache/code-coverage" --strict-coverage --coverage-clover ./coverage.xml
+      - name: Setup dusk/chrome
+        run: vendor/bin/dusk-updater detect --no-interaction
+
+      - name: Run Unit tests
+        run: vendor/bin/phpunit --testsuite Unit --cache-directory=".phpunit.cache/code-coverage" --strict-coverage --coverage-clover ./coverage.xml
+        env:
+          RUNNING_IN_CI: true
+
+      - name: Run Browser tests
+        if: success() || failure()
+        run: vendor/bin/phpunit --testsuite Browser
+        env:
+          RUNNING_IN_CI: true
+
+      - name: Run Legacy Browser tests
+        if: success() || failure()
+        run: vendor/bin/phpunit --testsuite LegacyBrowser
+        env:
+          RUNNING_IN_CI: true
 
       - name: Upload coverage reports to Codecov
         uses: codecov/codecov-action@v3
