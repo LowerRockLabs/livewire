@@ -65,13 +65,13 @@ jobs:
 
       - name: Run Browser tests
         if: success() || failure()
-        run: vendor/bin/phpunit --testsuite Browser
+        run: vendor/bin/phpunit --testsuite Browser --cache-directory=".phpunit.cache/code-coverage" --strict-coverage --coverage-clover ./coverage-browser.xml
         env:
           RUNNING_IN_CI: true
 
       - name: Run Legacy Browser tests
         if: success() || failure()
-        run: vendor/bin/phpunit --testsuite LegacyBrowser
+        run: vendor/bin/phpunit --testsuite LegacyBrowser --cache-directory=".phpunit.cache/code-coverage" --strict-coverage --coverage-clover ./coverage-browserlegacy.xml
         env:
           RUNNING_IN_CI: true
 
@@ -81,5 +81,5 @@ jobs:
           CODECOV_TOKEN: ${{ secrets.CODECOV_TOKEN }}
         with:
           token: ${{ secrets.CODECOV_TOKEN }}
-          files: ./coverage.xml
+          files: ./coverage.xml, ./coverage-browserlegacy, ./coverage-browser.xml
           verbose: true
